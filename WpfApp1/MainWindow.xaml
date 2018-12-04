@@ -12,23 +12,23 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid>
-            <ListBox x:Name="SubtitlePairBox" HorizontalContentAlignment="Stretch" Margin="0,0,-398,0">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ShowGridLines="True">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding FirstContent}" Grid.Column="0" HorizontalAlignment="Left" TextWrapping="Wrap"></TextBlock>
-                            <TextBlock Text="{Binding Diff}" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap"></TextBlock>
-                            <TextBlock Text="{Binding SecondContent}" Grid.Column="2" HorizontalAlignment="Right" TextWrapping="Wrap"></TextBlock>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <ListView x:Name="SubtitlePairBox" HorizontalContentAlignment="Stretch" Margin="0,0,-163,0">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="First" Width="Auto" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding FirstContent}"></TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Diff" Width="Auto"  DisplayMemberBinding="{Binding Diff}"></GridViewColumn>
+                        <GridViewColumn Header="Second" Width="Auto" DisplayMemberBinding="{Binding SecondContent}"></GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
 
         </Grid>
+        <CheckBox x:Name="ToggleDiffCheckBox" Content="CheckBox" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Margin="187,10,0,0" Checked="ToggleDiffCheckBox_Checked"/>
     </Grid>
 </Window>

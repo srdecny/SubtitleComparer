@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SubtitlesParser.Classes;
 using DiffMatchPatch;
+using System.ComponentModel;
 
 namespace WpfApp1.SubtitlePair
 {
@@ -92,12 +93,15 @@ namespace WpfApp1.SubtitlePair
         }
     }
 
-    public class Foo
+    public class SubtitlePairViewModel
     {
         public string FirstContent { get; }
         public string SecondContent { get; }
         public string Diff { get; }
-        public Foo(SubtitlePair pair)
+
+        public ICollectionView SubtitlePairs { get; set; }
+
+        public SubtitlePairViewModel(SubtitlePair pair)
         {
             FirstContent = "";
             SecondContent = "";
@@ -110,15 +114,14 @@ namespace WpfApp1.SubtitlePair
             {
                 SecondContent += s + ' ';
             }
-            if (FirstContent != "" && SecondContent != "") Diff = GenerateDiff(FirstContent, SecondContent);
-            else Diff = "EMPTY";
+            if (FirstContent == SecondContent ) Diff = "SAME";
+            else Diff = "DIFFERENT";
         }
 
         private string GenerateDiff(string first, string second)
         {
             var dmp = DiffMatchPatchModule.Default;
             var diffs = dmp.DiffMain(first, second);
-            var aa  = dmp.D
             return "AAAA";
         }
     }

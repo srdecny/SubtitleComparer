@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WpfApp1.SubtitlePair;
 using SubtitlesParser;
+using System.ComponentModel;
 using System.IO;
 
 namespace WpfApp1
@@ -42,17 +43,35 @@ namespace WpfApp1
             var parser = new SubtitlesParser.Classes.Parsers.SubParser();
 
             FirstSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\Vojta\Documents\Zapoctak\06.srt", FileMode.Open)));
-            SecondSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\Vojta\Documents\Zapoctak\07.srt", FileMode.Open)));
+            SecondSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\Vojta\Documents\Zapoctak\06a.srt", FileMode.Open)));
 
             var result = SubtitlePairHelper.GenerateSubtitlePairs(FirstSub, SecondSub);
-            var foo = new List<Foo>();
+            var foo = new List<SubtitlePairViewModel>();
             foreach (var item in result)
             {
-                foo.Add(new Foo(item));
+                foo.Add(new SubtitlePairViewModel(item));
             }
 
             SubtitlePairBox.ItemsSource = foo;
 
+        }
+
+        private void ToggleDiffCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ICollectionView view = CollectionViewSource.GetDefaultView(SubtitlePairBox);
+
+            if (ToggleDiffCheckBox.IsChecked.Value)
+            {
+                view.Filter = item =>
+                {
+                    SubtitlePairViewModel foo = item as SubtitlePairViewModel;
+                    return foo.Diff != "EMPTY";
+                };
+            }
+            else
+            {
+                view.Filter = item => { return true; };
+            }
         }
     }
 }
