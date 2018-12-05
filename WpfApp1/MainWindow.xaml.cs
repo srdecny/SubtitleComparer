@@ -13,9 +13,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WpfApp1.SubtitlePair;
+using System.Collections.ObjectModel;
 using SubtitlesParser;
 using System.ComponentModel;
 using System.IO;
+using Microsoft.Win32;
 
 namespace WpfApp1
 {
@@ -30,20 +32,19 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+            VideoElement.LoadedBehavior = MediaState.Manual;
+            VideoElement.Source = new Uri(@"C:\Users\srdecny\Documents\7_1.mp4");
+            Unosquare.FFME.MediaElement.FFmpegDirectory = @"C:\Users\srdecny\Downloads\ffmpeg-4.0.2-win64-shared\ffmpeg-4.0.2-win64-shared\bin";
             LoadSubtitles();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-
+            VideoDurationTextBox.DataContext = VideoElement.Position;
         }
 
         private void LoadSubtitles()
         {
             var parser = new SubtitlesParser.Classes.Parsers.SubParser();
 
-            FirstSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\Vojta\Documents\Zapoctak\06.srt", FileMode.Open)));
-            SecondSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\Vojta\Documents\Zapoctak\06a.srt", FileMode.Open)));
+            FirstSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\srdecny\Documents\subtitles.srt", FileMode.Open)));
+            SecondSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\srdecny\Documents\subtitles2.srt", FileMode.Open)));
 
             var result = SubtitlePairHelper.GenerateSubtitlePairs(FirstSub, SecondSub);
             var foo = new List<SubtitlePairViewModel>();
@@ -51,27 +52,55 @@ namespace WpfApp1
             {
                 foo.Add(new SubtitlePairViewModel(item));
             }
-
+                
             SubtitlePairBox.ItemsSource = foo;
+            var view = CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource);
+            view.Filter = ToggleDiffFilter;
 
+        }
+
+        private bool ToggleDiffFilter(object item)
+        {
+            SubtitlePairViewModel model = item as SubtitlePairViewModel;
+            if (ToggleDiffCheckBox.IsChecked.Value)
+            {
+                    return model.Diff == "DIFFERENT";
+            }
+            else
+            {
+                return true;
+            }
         }
 
         private void ToggleDiffCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            ICollectionView view = CollectionViewSource.GetDefaultView(SubtitlePairBox);
+                CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource).Refresh();
+        }
 
-            if (ToggleDiffCheckBox.IsChecked.Value)
+        private void ToggleDiffCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource).Refresh();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            if (dialog.ShowDialog() == true)
             {
-                view.Filter = item =>
-                {
-                    SubtitlePairViewModel foo = item as SubtitlePairViewModel;
-                    return foo.Diff != "EMPTY";
-                };
+                VideoElement.Source = new Uri(dialog.FileName);
             }
-            else
+        }
+
+        private void SubtitlePairBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var item = ((FrameworkElement)e.OriginalSource).DataContext as SubtitlePairViewModel;
+            if (item != null)
             {
-                view.Filter = item => { return true; };
+                // item.Start is in miliseconds, 10000 ms = 1 tick.
+                VideoElement.Position = new TimeSpan(item.Start * 10000);
+                VideoElement.Play();
             }
+
         }
     }
 }

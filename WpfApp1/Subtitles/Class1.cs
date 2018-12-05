@@ -95,9 +95,10 @@ namespace WpfApp1.SubtitlePair
 
     public class SubtitlePairViewModel
     {
-        public string FirstContent { get; }
-        public string SecondContent { get; }
-        public string Diff { get; }
+        public string FirstContent { get; set; }
+        public string SecondContent { get; set; }
+        public string Diff { get; set; }
+        public int Start { get; set; }
 
         public ICollectionView SubtitlePairs { get; set; }
 
@@ -105,6 +106,7 @@ namespace WpfApp1.SubtitlePair
         {
             FirstContent = "";
             SecondContent = "";
+            Start = Math.Min(pair.First.StartTime, pair.Second.StartTime);
             foreach (var s in pair.First.Lines)
             {
                 FirstContent += s + ' ' ;

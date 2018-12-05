@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800" >
     <Grid RenderTransformOrigin="0.529,0.489">
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid>
-            <ListView x:Name="SubtitlePairBox" HorizontalContentAlignment="Stretch" Margin="0,0,-163,0">
+            <ListView x:Name="SubtitlePairBox" HorizontalContentAlignment="Stretch" Margin="0,0,-163,0" MouseDoubleClick="SubtitlePairBox_MouseDoubleClick">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="First" Width="Auto" >
@@ -22,13 +22,28 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Diff" Width="Auto"  DisplayMemberBinding="{Binding Diff}"></GridViewColumn>
-                        <GridViewColumn Header="Second" Width="Auto" DisplayMemberBinding="{Binding SecondContent}"></GridViewColumn>
+                        <GridViewColumn Header="First" Width="Auto" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding Diff}"></TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="First" Width="Auto" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding SecondContent}"></TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>
 
         </Grid>
-        <CheckBox x:Name="ToggleDiffCheckBox" Content="CheckBox" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Margin="187,10,0,0" Checked="ToggleDiffCheckBox_Checked"/>
+        <CheckBox x:Name="ToggleDiffCheckBox" Content="CheckBox" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Margin="187,10,0,0" Checked="ToggleDiffCheckBox_Checked" Unchecked="ToggleDiffCheckBox_Unchecked"/>
+        <MediaElement x:Name="VideoElement" HorizontalAlignment="Left" Height="140" VerticalAlignment="Top" Width="191" Grid.Column="1" Margin="187.333,70,0,0"/>
+        <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Grid.Column="1" Margin="288.333,10,0,0" Click="Button_Click"/>
+        <TextBlock x:Name="VideoDurationTextBox" Grid.Column="1" HorizontalAlignment="Left" Margin="187.333,215,0,0" TextWrapping="Wrap" Text="{Binding}" VerticalAlignment="Top" Width="191"/>
     </Grid>
 </Window>
