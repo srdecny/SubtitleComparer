@@ -93,12 +93,21 @@ namespace WpfApp1.SubtitlePair
         }
     }
 
-    public class SubtitlePairViewModel
+    public class SubtitlePairViewModel : INotifyPropertyChanged
     {
         public string FirstContent { get; set; }
         public string SecondContent { get; set; }
         public string Diff { get; set; }
         public int Start { get; set; }
+        private bool isSelected;
+        public bool IsSelected {
+            get { return isSelected; }
+            set
+            {
+                isSelected = value;
+                OnPropertyChanged("IsSelected");
+            }
+        }
 
         public ICollectionView SubtitlePairs { get; set; }
 
@@ -106,6 +115,8 @@ namespace WpfApp1.SubtitlePair
         {
             FirstContent = "";
             SecondContent = "";
+            IsSelected = false;
+
             Start = Math.Min(pair.First.StartTime, pair.Second.StartTime);
             foreach (var s in pair.First.Lines)
             {
@@ -120,11 +131,18 @@ namespace WpfApp1.SubtitlePair
             else Diff = "DIFFERENT";
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private string GenerateDiff(string first, string second)
         {
             var dmp = DiffMatchPatchModule.Default;
             var diffs = dmp.DiffMain(first, second);
             return "AAAA";
+        }
+
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 

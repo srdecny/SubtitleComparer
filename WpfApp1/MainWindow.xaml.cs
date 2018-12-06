@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using SubtitlesParser;
 using System.ComponentModel;
 using System.IO;
+using System.Diagnostics;
 using Microsoft.Win32;
 
 namespace WpfApp1
@@ -26,6 +27,7 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool benchmark = false;
 
         Subtitles FirstSub;
         Subtitles SecondSub;
@@ -91,21 +93,34 @@ namespace WpfApp1
             }
         }
 
-        private void SubtitlePairBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void SubtitlePairBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (((FrameworkElement)e.OriginalSource).DataContext is SubtitlePairViewModel item)
             {
+                VideoElement.Pause();
                 // item.Start is in miliseconds, 10000 ms = 1 tick.
-                VideoElement.Stop();
-                VideoElement.Position = new TimeSpan(item.Start * 10000);
+                await VideoElement.Seek(new TimeSpan(item.Start * 10000));
                 VideoElement.Play();
             }
-
+                
         }
 
         private void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
             Console.WriteLine("...");
+        }
+
+        private void VideoElement_PositionChanged(object sender, Unosquare.FFME.Events.PositionChangedRoutedEventArgs e)
+        {
+            var items = SubtitlePairBox.ItemsSource as List<SubtitlePairViewModel>;
+            SubtitlePairBox.SelectedItems.Clear();
+            
+            // Microbenchmarked a manual for loop, but there's no performance difference.
+            var item = items.Where(x => new TimeSpan(x.Start * 10000) > VideoElement.Position).First();
+            item.IsSelected = true;            
+            SubtitlePairBox.UpdateLayout();
+            SubtitlePairBox.ScrollIntoView(item);
+            //((ListViewItem)SubtitlePairBox.ItemContainerGenerator.ContainerFromIndex(SubtitlePairBox.SelectedIndex)).Focus();
         }
     }
 }
