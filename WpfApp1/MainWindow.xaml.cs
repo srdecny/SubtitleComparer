@@ -31,12 +31,12 @@ namespace WpfApp1
         Subtitles SecondSub;
         public MainWindow()
         {
+            Unosquare.FFME.MediaElement.FFmpegDirectory = @"C:\Users\srdecny\Downloads\ffmpeg-4.0.2-win64-shared\ffmpeg-4.0.2-win64-shared\bin\";
             InitializeComponent();
             VideoElement.LoadedBehavior = MediaState.Manual;
             VideoElement.Source = new Uri(@"C:\Users\srdecny\Documents\7_1.mp4");
-            Unosquare.FFME.MediaElement.FFmpegDirectory = @"C:\Users\srdecny\Downloads\ffmpeg-4.0.2-win64-shared\ffmpeg-4.0.2-win64-shared\bin";
             LoadSubtitles();
-            VideoDurationTextBox.DataContext = VideoElement.Position;
+            VideoDurationTextBox.DataContext = VideoElement;
         }
 
         private void LoadSubtitles()
@@ -93,14 +93,19 @@ namespace WpfApp1
 
         private void SubtitlePairBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var item = ((FrameworkElement)e.OriginalSource).DataContext as SubtitlePairViewModel;
-            if (item != null)
+            if (((FrameworkElement)e.OriginalSource).DataContext is SubtitlePairViewModel item)
             {
                 // item.Start is in miliseconds, 10000 ms = 1 tick.
+                VideoElement.Stop();
                 VideoElement.Position = new TimeSpan(item.Start * 10000);
                 VideoElement.Play();
             }
 
+        }
+
+        private void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            Console.WriteLine("...");
         }
     }
 }

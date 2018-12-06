@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" >
@@ -42,8 +43,9 @@
 
         </Grid>
         <CheckBox x:Name="ToggleDiffCheckBox" Content="CheckBox" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Margin="187,10,0,0" Checked="ToggleDiffCheckBox_Checked" Unchecked="ToggleDiffCheckBox_Unchecked"/>
-        <MediaElement x:Name="VideoElement" HorizontalAlignment="Left" Height="140" VerticalAlignment="Top" Width="191" Grid.Column="1" Margin="187.333,70,0,0"/>
+        <ffme:MediaElement x:Name="VideoElement" Background="Gray" LoadedBehavior="Play" UnloadedBehavior="Manual" Grid.Column="1" Margin="209.333,65,18.333,123.667" MediaFailed="VideoElement_MediaFailed" />
         <Button Content="Button" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Grid.Column="1" Margin="288.333,10,0,0" Click="Button_Click"/>
-        <TextBlock x:Name="VideoDurationTextBox" Grid.Column="1" HorizontalAlignment="Left" Margin="187.333,215,0,0" TextWrapping="Wrap" Text="{Binding}" VerticalAlignment="Top" Width="191"/>
+        <TextBlock x:Name="VideoDurationTextBox" Grid.Column="1" HorizontalAlignment="Left" Margin="187.333,215,0,0" TextWrapping="Wrap" Text="{Binding Position, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" VerticalAlignment="Top" Width="191"/>
+        <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="413.333,140,-136.667,0" VerticalAlignment="Top" Width="120"/>
     </Grid>
 </Window>
