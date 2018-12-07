@@ -19,6 +19,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Diagnostics;
 using Microsoft.Win32;
+using WpfApp1.Extensions;
+using System.Windows.Threading;
+using Unosquare.FFME.Shared;
 
 namespace WpfApp1
 {
@@ -27,16 +30,16 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        bool benchmark = false;
 
         Subtitles FirstSub;
         Subtitles SecondSub;
         public MainWindow()
         {
-            Unosquare.FFME.MediaElement.FFmpegDirectory = @"C:\Users\srdecny\Downloads\ffmpeg-4.0.2-win64-shared\ffmpeg-4.0.2-win64-shared\bin\";
+            Unosquare.FFME.MediaElement.FFmpegDirectory = @"C:\Users\srdecny\Documents\ffmpeg";
+
             InitializeComponent();
             VideoElement.LoadedBehavior = MediaState.Manual;
-            VideoElement.Source = new Uri(@"C:\Users\srdecny\Documents\7_1.mp4");
+            VideoElement.Source = new Uri(@"C:\Users\srdecny\Documents\videoplayback.mp4");
             LoadSubtitles();
             VideoDurationTextBox.DataContext = VideoElement;
         }
@@ -97,10 +100,10 @@ namespace WpfApp1
         {
             if (((FrameworkElement)e.OriginalSource).DataContext is SubtitlePairViewModel item)
             {
-                VideoElement.Pause();
+                await VideoElement.Pause();
                 // item.Start is in miliseconds, 10000 ms = 1 tick.
-                await VideoElement.Seek(new TimeSpan(item.Start * 10000));
-                VideoElement.Play();
+                await VideoElement.Seek(new TimeSpan((long)item.Start * 10000))
+                await VideoElement.Play();
             }
                 
         }
@@ -114,13 +117,34 @@ namespace WpfApp1
         {
             var items = SubtitlePairBox.ItemsSource as List<SubtitlePairViewModel>;
             SubtitlePairBox.SelectedItems.Clear();
-            
+
             // Microbenchmarked a manual for loop, but there's no performance difference.
-            var item = items.Where(x => new TimeSpan(x.Start * 10000) > VideoElement.Position).First();
-            item.IsSelected = true;            
+            
+            var item = items.Where(x => new TimeSpan((long)x.Start * 10000) > VideoElement.Position).First();
+
+            item.IsSelected = true;
             SubtitlePairBox.UpdateLayout();
-            SubtitlePairBox.ScrollIntoView(item);
-            //((ListViewItem)SubtitlePairBox.ItemContainerGenerator.ContainerFromIndex(SubtitlePairBox.SelectedIndex)).Focus();
+            SubtitlePairBox.ScrollToCenterOfView(item);
+            
+        }
+
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (VideoElement.IsPlaying)
+            {
+                await VideoElement.Pause();
+            }
+            else
+            {
+                await VideoElement.Play();
+            }
+
+
+        }
+
+        void MainWindow_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            Console.WriteLine("...");
         }
     }
 }
