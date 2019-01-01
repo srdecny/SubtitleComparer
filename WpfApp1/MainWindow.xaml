@@ -20,7 +20,7 @@
                 x:Name="SubtitlePairBox"
                 Margin="0,0,-0.333,-0.333"
                 HorizontalContentAlignment="Stretch"
-                MouseDoubleClick="SubtitlePairBox_MouseDoubleClick">
+                MouseDoubleClick="SubtitlePairBox_MouseDoubleClick"
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="IsSelected" Value="{Binding IsSelected}" />
@@ -38,7 +38,7 @@
                         <GridViewColumn Width="Auto" Header="First">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Start}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding Diff}" TextWrapping="Wrap" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

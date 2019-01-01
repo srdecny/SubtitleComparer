@@ -49,7 +49,7 @@ namespace WpfApp1
             var parser = new SubtitlesParser.Classes.Parsers.SubParser();
 
             FirstSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\srdecny\Documents\subtitles.srt", FileMode.Open)));
-            SecondSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\srdecny\Documents\subtitles2.srt", FileMode.Open)));
+            SecondSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\srdecny\Documents\subtitles3.srt", FileMode.Open)));
 
             var result = SubtitlePairHelper.GenerateSubtitlePairs(FirstSub, SecondSub);
             var foo = new List<SubtitlePairViewModel>();
@@ -102,7 +102,7 @@ namespace WpfApp1
             {
                 await VideoElement.Pause();
                 // item.Start is in miliseconds, 10000 ms = 1 tick.
-                await VideoElement.Seek(new TimeSpan((long)item.Start * 10000))
+                await VideoElement.Seek(new TimeSpan((long)item.FirstStart * 10000));
                 await VideoElement.Play();
             }
                 
@@ -113,6 +113,7 @@ namespace WpfApp1
             Console.WriteLine("...");
         }
 
+        // Update the selected items and center the screen.
         private void VideoElement_PositionChanged(object sender, Unosquare.FFME.Events.PositionChangedRoutedEventArgs e)
         {
             var items = SubtitlePairBox.ItemsSource as List<SubtitlePairViewModel>;
@@ -120,11 +121,15 @@ namespace WpfApp1
 
             // Microbenchmarked a manual for loop, but there's no performance difference.
             
-            var item = items.Where(x => new TimeSpan((long)x.Start * 10000) > VideoElement.Position).First();
+            var firstItem = items.Where(x => new TimeSpan((long)x.FirstStart * 10000) > VideoElement.Position).First();
+            var secondItem = items.Where(x => new TimeSpan((long)x.SecondStart * 10000) > VideoElement.Position).First();
 
-            item.IsSelected = true;
+            firstItem.IsSelected = true;
+            secondItem.IsSelected = true;   
             SubtitlePairBox.UpdateLayout();
-            SubtitlePairBox.ScrollToCenterOfView(item);
+
+            // TODO: Handle a case where the items too much out of sync.
+            SubtitlePairBox.ScrollToCenterOfView(firstItem);
             
         }
 
@@ -146,5 +151,7 @@ namespace WpfApp1
         {
             Console.WriteLine("...");
         }
+
+        
     }
 }

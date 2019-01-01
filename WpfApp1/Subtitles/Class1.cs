@@ -98,7 +98,8 @@ namespace WpfApp1.SubtitlePair
         public string FirstContent { get; set; }
         public string SecondContent { get; set; }
         public string Diff { get; set; }
-        public int Start { get; set; }
+        public int FirstStart { get; set; }
+        public int SecondStart { get; set; }
         private bool isSelected;
         public bool IsSelected {
             get { return isSelected; }
@@ -117,7 +118,9 @@ namespace WpfApp1.SubtitlePair
             SecondContent = "";
             IsSelected = false;
 
-            Start = Math.Min(pair.First.StartTime, pair.Second.StartTime);
+            FirstStart = pair.First.StartTime;
+            SecondStart = pair.Second.StartTime;
+
             foreach (var s in pair.First.Lines)
             {
                 FirstContent += s + ' ' ;
