@@ -30,26 +30,31 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        Settings AppSettings { get; set; } = new Settings();
         Subtitles FirstSub;
         Subtitles SecondSub;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public MainWindow()
         {
             Unosquare.FFME.MediaElement.FFmpegDirectory = @"C:\Users\srdecny\Documents\ffmpeg";
+            AppSettings.FirstSubtitlePath = @"C:\Users\srdecny\Documents\subtitles.srt";
 
             InitializeComponent();
             VideoElement.LoadedBehavior = MediaState.Manual;
-            VideoElement.Source = new Uri(@"C:\Users\srdecny\Documents\videoplayback.mp4");
-            LoadSubtitles();
+            VideoElement.Source = new Uri(AppSettings.AudioFilePath);
+            LoadSubtitlesAndAudio();
             VideoDurationTextBox.DataContext = VideoElement;
+            this.DataContext = AppSettings;
         }
 
-        private void LoadSubtitles()
+        private void LoadSubtitlesAndAudio()
         {
             var parser = new SubtitlesParser.Classes.Parsers.SubParser();
 
-            FirstSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\srdecny\Documents\subtitles.srt", FileMode.Open)));
-            SecondSub = new Subtitles(parser.ParseStream(new FileStream(@"C:\Users\srdecny\Documents\subtitles3.srt", FileMode.Open)));
+            FirstSub = new Subtitles(parser.ParseStream(new FileStream(AppSettings.FirstSubtitlePath, FileMode.Open)));
+            SecondSub = new Subtitles(parser.ParseStream(new FileStream(AppSettings.SecondSubtitlePath, FileMode.Open)));
 
             var result = SubtitlePairHelper.GenerateSubtitlePairs(FirstSub, SecondSub);
             var foo = new List<SubtitlePairViewModel>();
@@ -152,6 +157,29 @@ namespace WpfApp1
             Console.WriteLine("...");
         }
 
-        
+        private string ShowFileSelectionDialog()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true) return openFileDialog.FileName;
+            else throw new Exception("Dialog did not close properly.");
+        }
+
+        private void FirstSubtitleFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            AppSettings.FirstSubtitlePath = ShowFileSelectionDialog();
+            LoadSubtitlesAndAudio();
+        }
+
+        private void SecondSubtitleButton_Click(object sender, RoutedEventArgs e)
+        {
+           AppSettings.SecondSubtitlePath = ShowFileSelectionDialog();
+            LoadSubtitlesAndAudio();
+        }
+
+        private void AudioFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            AppSettings.AudioFilePath = ShowFileSelectionDialog();
+            LoadSubtitlesAndAudio();
+        }
     }
 }

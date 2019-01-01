@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:WpfApp1"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="MainWindow"
-    Width="800"
+    Width="917.333"
     Height="450"
     mc:Ignorable="d">
     <Grid RenderTransformOrigin="0.529,0.489">
@@ -21,6 +21,7 @@
                 Margin="0,0,-0.333,-0.333"
                 HorizontalContentAlignment="Stretch"
                 MouseDoubleClick="SubtitlePairBox_MouseDoubleClick"
+                >
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="IsSelected" Value="{Binding IsSelected}" />
@@ -54,15 +55,15 @@
             </ListView>
 
         </Grid>
-        <Grid Grid.ColumnSpan="2" Margin="485,0,0.333,-0.333">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="15*" />
-                <ColumnDefinition Width="13*" />
-            </Grid.ColumnDefinitions>
+        <Grid Margin="4.667,0,0.667,-0.333" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
             <CheckBox
                 x:Name="ToggleDiffCheckBox"
-                Grid.ColumnSpan="2"
-                Margin="0,16,83.001,0"
+                Grid.Row="0"
+                Margin="0,30,216.999,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Checked="ToggleDiffCheckBox_Checked"
@@ -70,17 +71,18 @@
                 Unchecked="ToggleDiffCheckBox_Unchecked" />
             <TextBlock
                 x:Name="VideoDurationTextBox"
-                Grid.ColumnSpan="2"
+                Grid.Row="0"
                 Width="191"
-                Margin="0,0,64,211"
+                Margin="0,0,58.999,80.667"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Text="{Binding Position, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                 TextWrapping="Wrap" />
             <Button
+                Grid.Row="0"
                 Width="77"
                 Height="25"
-                Margin="0,10,35.333,0"
+                Margin="0,0,210.999,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Click="Button_Click"
@@ -88,10 +90,10 @@
             />
             <ffme:MediaElement
                 x:Name="VideoElement"
-                Grid.ColumnSpan="2"
+                Grid.Row="0"
                 Width="227"
                 Height="264"
-                Margin="0,-19,28,176"
+                Margin="0,0,34.999,9.667"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 LoadedBehavior="Play"
@@ -100,8 +102,16 @@
                 UnloadedBehavior="Manual" 
                 >
             </ffme:MediaElement>
-            <Button Content="Button" Margin="0,0,123,122" Grid.ColumnSpan="2" Click="Button_Click_1" HorizontalAlignment="Right" Width="120" Height="49" VerticalAlignment="Bottom"/>
+            <Button Content="Button" Margin="0,0,27.999,31.667" Click="Button_Click_1" HorizontalAlignment="Right" Width="120" Height="49" VerticalAlignment="Bottom"/>
+            <Grid Grid.Row="2">
+                <Button x:Name="FirstSubtitleFileButton" Content="First subtitle" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" Click="FirstSubtitleFileButton_Click"/>
+                <TextBlock HorizontalAlignment="Left" Margin="115,10,0,0" TextWrapping="Wrap" Text="{Binding FirstSubtitlePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173"/>
+                <Button x:Name="SecondSubtitleFileButton" Content="Second subtitle" HorizontalAlignment="Left" Margin="10,51,0,0" VerticalAlignment="Top" Width="90" Click="SecondSubtitleButton_Click" />
+                <TextBlock HorizontalAlignment="Left" Margin="115,51,0,0" TextWrapping="Wrap" Text="{Binding SecondSubtitlePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173"/>
+                <Button x:Name="AudioFileButton" Content="Audio file" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Width="90" Click="AudioFileButton_Click" />
+                <TextBlock HorizontalAlignment="Left" Margin="115,91,0,0" TextWrapping="Wrap" Text="{Binding AudioFilePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173"/>
 
+            </Grid>
         </Grid>
     </Grid>
 </Window>

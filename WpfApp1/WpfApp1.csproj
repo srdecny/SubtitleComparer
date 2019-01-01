@@ -75,6 +75,7 @@
     </ApplicationDefinition>
     <Compile Include="Extensions\ScrollExtension.cs" />
     <Compile Include="Subtitles\Class1.cs" />
+    <Compile Include="Subtitles\Settings.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

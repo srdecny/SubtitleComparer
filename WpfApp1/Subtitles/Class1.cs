@@ -134,7 +134,7 @@ namespace WpfApp1.SubtitlePair
             else Diff = "DIFFERENT";
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;   
 
         private string GenerateDiff(string first, string second)
         {
