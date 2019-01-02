@@ -140,16 +140,7 @@ namespace WpfApp1
 
         private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (VideoElement.IsPlaying)
-            {
-                await VideoElement.Pause();
-            }
-            else
-            {
-                await VideoElement.Play();
-            }
-
-
+            
         }
 
         void MainWindow_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -161,7 +152,7 @@ namespace WpfApp1
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true) return openFileDialog.FileName;
-            else throw new Exception("Dialog did not close properly.");
+            else return "";
         }
 
         private void FirstSubtitleFileButton_Click(object sender, RoutedEventArgs e)

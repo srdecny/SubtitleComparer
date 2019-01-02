@@ -7,9 +7,28 @@
     xmlns:local="clr-namespace:WpfApp1"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="MainWindow"
-    Width="917.333"
+    Width="917.333" 
     Height="450"
     mc:Ignorable="d">
+    <Window.InputBindings>
+        <KeyBinding Key="Space" Command="MediaCommands.Pause"></KeyBinding>
+        <KeyBinding Key="Right" Command="MediaCommands.FastForward"></KeyBinding>
+        <KeyBinding Key="Left" Command="MediaCommands.Rewind"></KeyBinding>
+    </Window.InputBindings>
+    <Window.CommandBindings>
+        <CommandBinding Command="MediaCommands.Pause"
+                        Executed="Executed_PausePlay"
+                        CanExecute="CanExecute_PausePlay">
+        </CommandBinding>
+        <CommandBinding Command="MediaCommands.FastForward"
+                        Executed="Executed_Forward"
+                        CanExecute="CanExecute_Forward">
+        </CommandBinding>
+        <CommandBinding Command="MediaCommands.Rewind"
+                        Executed="Executed_Backward"
+                        CanExecute="CanExecute_Backward">
+        </CommandBinding>
+    </Window.CommandBindings>
     <Grid RenderTransformOrigin="0.529,0.489">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
@@ -63,7 +82,7 @@
             <CheckBox
                 x:Name="ToggleDiffCheckBox"
                 Grid.Row="0"
-                Margin="0,30,216.999,0"
+                Margin="0,172,210.999,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Checked="ToggleDiffCheckBox_Checked"
@@ -82,7 +101,7 @@
                 Grid.Row="0"
                 Width="77"
                 Height="25"
-                Margin="0,0,210.999,0"
+                Margin="0,139,210.999,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Click="Button_Click"
@@ -93,14 +112,15 @@
                 Grid.Row="0"
                 Width="227"
                 Height="264"
-                Margin="0,0,34.999,9.667"
+                Margin="0,-64,9.999,80.667"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 LoadedBehavior="Play"
                 MediaFailed="VideoElement_MediaFailed"
                 PositionChanged="VideoElement_PositionChanged"
-                UnloadedBehavior="Manual" 
+                UnloadedBehavior="Manual"
                 >
+
             </ffme:MediaElement>
             <Button Content="Button" Margin="0,0,27.999,31.667" Click="Button_Click_1" HorizontalAlignment="Right" Width="120" Height="49" VerticalAlignment="Bottom"/>
             <Grid Grid.Row="2">

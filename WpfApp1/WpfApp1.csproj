@@ -74,6 +74,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extensions\ScrollExtension.cs" />
+    <Compile Include="Shortcuts\Shortcuts.cs" />
     <Compile Include="Subtitles\Class1.cs" />
     <Compile Include="Subtitles\Settings.cs" />
     <Page Include="MainWindow.xaml">
