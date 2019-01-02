@@ -73,6 +73,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Analyzers\Class1.cs" />
     <Compile Include="Extensions\ScrollExtension.cs" />
     <Compile Include="Shortcuts\Shortcuts.cs" />
     <Compile Include="Subtitles\Class1.cs" />

@@ -34,8 +34,6 @@ namespace WpfApp1
         Subtitles FirstSub;
         Subtitles SecondSub;
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public MainWindow()
         {
             Unosquare.FFME.MediaElement.FFmpegDirectory = @"C:\Users\srdecny\Documents\ffmpeg";
@@ -44,17 +42,23 @@ namespace WpfApp1
             InitializeComponent();
             VideoElement.LoadedBehavior = MediaState.Manual;
             VideoElement.Source = new Uri(AppSettings.AudioFilePath);
-            LoadSubtitlesAndAudio();
             VideoDurationTextBox.DataContext = VideoElement;
             this.DataContext = AppSettings;
+            LoadSubtitlesAndAudio();
         }
 
         private void LoadSubtitlesAndAudio()
         {
             var parser = new SubtitlesParser.Classes.Parsers.SubParser();
 
-            FirstSub = new Subtitles(parser.ParseStream(new FileStream(AppSettings.FirstSubtitlePath, FileMode.Open)));
-            SecondSub = new Subtitles(parser.ParseStream(new FileStream(AppSettings.SecondSubtitlePath, FileMode.Open)));
+            using (var stream = new FileStream(AppSettings.FirstSubtitlePath, FileMode.Open))
+            {
+                FirstSub = new Subtitles(parser.ParseStream(stream));
+            }
+            using (var stream = new FileStream(AppSettings.SecondSubtitlePath, FileMode.Open))
+            {
+                SecondSub = new Subtitles(parser.ParseStream(stream));
+            }
 
             var result = SubtitlePairHelper.GenerateSubtitlePairs(FirstSub, SecondSub);
             var foo = new List<SubtitlePairViewModel>();
@@ -66,7 +70,7 @@ namespace WpfApp1
             SubtitlePairBox.ItemsSource = foo;
             var view = CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource);
             view.Filter = ToggleDiffFilter;
-
+            AnalyzeSubtitles();
         }
 
         private bool ToggleDiffFilter(object item)
@@ -138,9 +142,9 @@ namespace WpfApp1
             
         }
 
-        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            
+            PauseCommand?.Execute(null, null);
         }
 
         void MainWindow_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -158,19 +162,31 @@ namespace WpfApp1
         private void FirstSubtitleFileButton_Click(object sender, RoutedEventArgs e)
         {
             AppSettings.FirstSubtitlePath = ShowFileSelectionDialog();
-            LoadSubtitlesAndAudio();
+             if (AppSettings.FirstSubtitlePath != "") LoadSubtitlesAndAudio();
         }
 
         private void SecondSubtitleButton_Click(object sender, RoutedEventArgs e)
         {
            AppSettings.SecondSubtitlePath = ShowFileSelectionDialog();
-            LoadSubtitlesAndAudio();
+            if (AppSettings.SecondSubtitlePath != "") LoadSubtitlesAndAudio();
         }
 
         private void AudioFileButton_Click(object sender, RoutedEventArgs e)
         {
             AppSettings.AudioFilePath = ShowFileSelectionDialog();
-            LoadSubtitlesAndAudio();
+            if (AppSettings.AudioFilePath != "") LoadSubtitlesAndAudio();
+        }
+
+        private void AnalyzeSubtitles()
+        {
+            if (Analyzers.AnalyzeOutOfSync(FirstSub, SecondSub))
+            {
+                MessageBox.Show("Loaded subtitles seem to be out of sync with each other.");
+            }
+            else if (Analyzers.AnalyzeSimilarness(FirstSub, SecondSub))
+            {
+                MessageBox.Show("Loaded subtitles aren't similar at all. Do they belong to the same audio file?");
+            }
         }
     }
 }

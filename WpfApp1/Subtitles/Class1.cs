@@ -21,8 +21,6 @@ namespace WpfApp1.SubtitlePair
 
     public static class SubtitlePairHelper
     {   
-        public static int Delta = 50;
-
         public static SubtitleItem CreateEmptySubtitleItem()
         {
             var item = new SubtitleItem();
@@ -39,7 +37,7 @@ namespace WpfApp1.SubtitlePair
 
                 foreach (var j in second.SubtitleItems)
                 {
-                    if (Math.Abs(i.StartTime - j.StartTime) <= Delta)
+                    if (Math.Abs(i.StartTime - j.StartTime) <= Settings.MilisecondSpreadSimilarness)
                     {
                         result.Add(new SubtitlePair(i, j));
                         AddedPair = true;

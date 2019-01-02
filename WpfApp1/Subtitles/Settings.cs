@@ -52,6 +52,12 @@ namespace WpfApp1
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+        // Delta time range, where subtitles are considered similar enough.
+        public static int MilisecondSpreadSimilarness = 50;
+
+        // Treshold ercentage of subtitle pairs, where they are considered different.
+        public static double SimilarnessPercentageTreshold = 0.5;
+
 
     }
 
