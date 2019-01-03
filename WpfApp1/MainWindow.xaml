@@ -58,7 +58,7 @@
                         <GridViewColumn Width="Auto" Header="First">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Diff}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding Diff, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" TargetUpdated="Diff_TargetUpdated" TextWrapping="Wrap" Loaded="TextBlock_Loaded" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -82,47 +82,33 @@
             <CheckBox
                 x:Name="ToggleDiffCheckBox"
                 Grid.Row="0"
-                Margin="0,172,210.999,0"
+                Margin="0,261,222.999,0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Checked="ToggleDiffCheckBox_Checked"
-                Content="CheckBox"
+                Content="Filter Diff"
                 Unchecked="ToggleDiffCheckBox_Unchecked" />
             <TextBlock
                 x:Name="VideoDurationTextBox"
                 Grid.Row="0"
                 Width="191"
-                Margin="0,0,58.999,80.667"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Text="{Binding Position, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
-                TextWrapping="Wrap" />
-            <Button
-                Grid.Row="0"
-                Width="77"
-                Height="25"
-                Margin="0,139,210.999,0"
+                Margin="0,0,102.999,56.667"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                Click="Button_Click"
-                Content="Button"
-            />
+                Text="{Binding Position, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                TextWrapping="Wrap" />
             <ffme:MediaElement
                 x:Name="VideoElement"
                 Grid.Row="0"
-                Width="227"
                 Height="264"
-                Margin="0,-64,9.999,80.667"
-                HorizontalAlignment="Right"
+                Margin="61,-64,9.999,80.667"
                 VerticalAlignment="Bottom"
                 LoadedBehavior="Play"
                 MediaFailed="VideoElement_MediaFailed"
                 PositionChanged="VideoElement_PositionChanged"
                 UnloadedBehavior="Manual"
-                >
-
-            </ffme:MediaElement>
-            <Button Content="Button" Margin="0,0,27.999,31.667" Click="Button_Click_1" HorizontalAlignment="Right" Width="120" Height="49" VerticalAlignment="Bottom"/>
+                />
+            <Button Content="Play/Pause" Margin="0,0,9.999,31.667" Click="Button_Click_1" HorizontalAlignment="Right" Width="120" Height="49" VerticalAlignment="Bottom"/>
             <Grid Grid.Row="2">
                 <Button x:Name="FirstSubtitleFileButton" Content="First subtitle" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" Click="FirstSubtitleFileButton_Click"/>
                 <TextBlock HorizontalAlignment="Left" Margin="115,10,0,0" TextWrapping="Wrap" Text="{Binding FirstSubtitlePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173"/>

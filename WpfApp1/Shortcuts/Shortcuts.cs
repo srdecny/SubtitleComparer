@@ -31,10 +31,10 @@ namespace WpfApp1
         public static RoutedCommand ForwardCommand = new RoutedCommand();
         public static RoutedCommand BackwardCommand = new RoutedCommand();
 
-        public async void Executed_PausePlay(object sender, ExecutedRoutedEventArgs e)
+        public void Executed_PausePlay(object sender, ExecutedRoutedEventArgs e)
         {
-            if (VideoElement.IsPaused) await VideoElement.Play();
-            else await VideoElement.Pause();
+            if (VideoElement.IsPaused) VideoElement.Play();
+            else VideoElement.Pause();
         }
 
         public void CanExecute_PausePlay(object sender, CanExecuteRoutedEventArgs e)

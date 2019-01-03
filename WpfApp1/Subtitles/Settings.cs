@@ -42,8 +42,8 @@ namespace WpfApp1
 
         public Settings()
         {
-            _FirstSubtitlePath = @"C:\Users\srdecny\Documents\subtitles2.srt";
-            _SecondSubtitlePath = @"C:\Users\srdecny\Documents\subtitles3.srt";
+            _FirstSubtitlePath = @"C:\Users\srdecny\Documents\subtitles.srt";
+            _SecondSubtitlePath = @"C:\Users\srdecny\Documents\subtitles.srt";
             _AudioFilePath = @"C:\Users\srdecny\Documents\videoplayback.mp4";
         }
 

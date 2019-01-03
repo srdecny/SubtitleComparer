@@ -62,6 +62,7 @@ namespace WpfApp1.SubtitlePair
             result.Sort();
             return result;
         }
+   
     }
 
    public class SubtitlePair : IComparable<SubtitlePair>
@@ -95,7 +96,16 @@ namespace WpfApp1.SubtitlePair
     {
         public string FirstContent { get; set; }
         public string SecondContent { get; set; }
-        public string Diff { get; set; }
+        private string _Diff;
+        public string Diff
+        {
+            get { return _Diff; }
+            set
+            {
+                _Diff = value;
+                OnPropertyChanged("Diff");
+            }
+        }
         public int FirstStart { get; set; }
         public int SecondStart { get; set; }
         private bool isSelected;
@@ -128,23 +138,16 @@ namespace WpfApp1.SubtitlePair
             {
                 SecondContent += s + ' ';
             }
-            if (FirstContent == SecondContent ) Diff = "SAME";
-            else Diff = "DIFFERENT";
+            Diff = FirstContent + '\n' + SecondContent;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;   
-
-        private string GenerateDiff(string first, string second)
-        {
-            var dmp = DiffMatchPatchModule.Default;
-            var diffs = dmp.DiffMain(first, second);
-            return "AAAA";
-        }
-
+        public event PropertyChangedEventHandler PropertyChanged;
+        
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+
     }
 
     

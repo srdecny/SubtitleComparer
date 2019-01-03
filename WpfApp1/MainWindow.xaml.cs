@@ -78,7 +78,7 @@ namespace WpfApp1
             SubtitlePairViewModel model = item as SubtitlePairViewModel;
             if (ToggleDiffCheckBox.IsChecked.Value)
             {
-                    return model.Diff == "DIFFERENT";
+                return model.FirstContent != model.SecondContent;
             }
             else
             {
@@ -94,15 +94,6 @@ namespace WpfApp1
         private void ToggleDiffCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource).Refresh();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            if (dialog.ShowDialog() == true)
-            {
-                VideoElement.Source = new Uri(dialog.FileName);
-            }
         }
 
         private async void SubtitlePairBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -144,7 +135,7 @@ namespace WpfApp1
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            PauseCommand?.Execute(null, null);
+            Executed_PausePlay(sender, null);
         }
 
         void MainWindow_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -187,6 +178,96 @@ namespace WpfApp1
             {
                 MessageBox.Show("Loaded subtitles aren't similar at all. Do they belong to the same audio file?");
             }
+        }
+
+        private void Diff_TargetUpdated(object sender, DataTransferEventArgs e)
+        {
+            if (sender is TextBlock block)
+            {
+
+                var delimiters = ",. ".ToCharArray();
+
+                if (block.Text.Split('\n')[0] == block.Text.Split('\n')[1])
+                {
+                    block.Text = "SAME";
+                    return;
+                }
+                else
+                {
+                    var firstWords = block.Text.Split('\n')[0].Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+                    var secondWords = block.Text.Split('\n')[1].Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+
+                    List<(string, bool)> formattedWordsFirst = new List<(string, bool)>();
+                    List<(string, bool)> formattedWordsSecond = new List<(string, bool)>();
+
+                    int smallerSize = Math.Min(firstWords.Count(), secondWords.Count());
+
+
+                    block.Text = "";
+
+                    for (int i = 0; i < smallerSize; i++)
+                    {
+                        if (firstWords[i] != secondWords[i])
+                        {
+                            formattedWordsFirst.Add(ValueTuple.Create(firstWords[i], true));
+                            formattedWordsSecond.Add(ValueTuple.Create(secondWords[i], true));
+                        }
+                        else
+                        {
+                            formattedWordsFirst.Add(ValueTuple.Create(firstWords[i], false));
+                            formattedWordsSecond.Add(ValueTuple.Create(secondWords[i], false));
+                        }
+                    }
+
+                    if (firstWords.Count() > smallerSize)
+                    {
+                        for (int i = smallerSize; i < firstWords.Count(); i++)
+                        {
+                            formattedWordsFirst.Add(ValueTuple.Create(firstWords[i], true));
+                        }
+                    }
+                    else
+                    {
+                        for (int i = smallerSize; i < secondWords.Count(); i++)
+                        {
+                            formattedWordsSecond.Add(ValueTuple.Create(secondWords[i], true));
+                        }
+                    }
+
+                    foreach (var formattedWord in formattedWordsFirst)
+                    {
+                        if (formattedWord.Item2 == true)
+                        {
+                            block.Inlines.Add(new Run(formattedWord.Item1 + " ") { Foreground = Brushes.Red });
+                        }
+                        else
+                        {
+                            block.Inlines.Add(new Run(formattedWord.Item1 + " "));
+
+                        }
+                    }
+                    block.Inlines.Add(new Run("\n"));
+                    foreach (var formattedWord in formattedWordsSecond)
+                    {
+                        if (formattedWord.Item2 == true)
+                        {
+                            block.Inlines.Add(new Run(formattedWord.Item1 + " ") { Foreground = Brushes.Green });
+                        }
+                        else
+                        {
+                            block.Inlines.Add(new Run(formattedWord.Item1 + " "));
+                        }
+                    }
+
+                }
+
+
+            }
+        }
+
+        private void TextBlock_Loaded(object sender, RoutedEventArgs e)
+        {
+            Diff_TargetUpdated(sender, null);
         }
     }
 }
