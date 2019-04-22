@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SubtitlesParser.Classes;
-using DiffMatchPatch;
 using System.ComponentModel;
+using System.Collections;
+using System.IO;
+using System.Windows;
+
 
 namespace WpfApp1.SubtitlePair
 {
@@ -59,13 +62,17 @@ namespace WpfApp1.SubtitlePair
                 }
             }
 
-            result.Sort();
             return result;
+        }
+
+        public static string CreateSubtitles(List<SubtitleItem> subtitles)
+        {
+            return "aa";
         }
    
     }
 
-   public class SubtitlePair : IComparable<SubtitlePair>
+   public class SubtitlePair
     {
         public SubtitleItem First;
         public SubtitleItem Second;
@@ -74,40 +81,69 @@ namespace WpfApp1.SubtitlePair
         {
             First = first;
             Second = second;
+
         }
 
-        public int CompareTo(SubtitlePair other)
-        {
-            int thisStartTime = Math.Max(this.First.StartTime, this.Second.StartTime);
-            int otherStartTime = Math.Max(other.First.StartTime, other.Second.StartTime);
 
-            if (thisStartTime > otherStartTime)
-            {
-                return 1;
-            }
-            else
-            {
-                return -1;
-            }
-        }
+        
     }
 
     public class SubtitlePairViewModel : INotifyPropertyChanged
     {
         public string FirstContent { get; set; }
         public string SecondContent { get; set; }
-        private string _Diff;
-        public string Diff
+
+        // For displaying in GUI
+        public TimeSpan FirstStartTimeSpan
         {
-            get { return _Diff; }
+            get { return TimeSpan.FromMilliseconds(FirstStart); }
             set
             {
-                _Diff = value;
-                OnPropertyChanged("Diff");
+                FirstStart = (int)value.TotalMilliseconds;
+                OnPropertyChanged("FirstStart");
             }
         }
+
+        public TimeSpan SecondStartTimeSpan
+        {
+            get { return TimeSpan.FromMilliseconds(SecondStart); }
+            set
+            {
+                SecondStart = (int)value.TotalMilliseconds;
+                OnPropertyChanged("SecondStart");
+            }
+
+        }
+
+        public TimeSpan FirstEndTimeSpan
+        {
+            get { return TimeSpan.FromMilliseconds(FirstEnd); }
+            set
+            {
+                FirstEnd = (int)value.TotalMilliseconds;
+                OnPropertyChanged("FirstEnd");
+            }
+        }
+
+        public TimeSpan SecondEndTimeSpan
+        {
+            get { return TimeSpan.FromMilliseconds(SecondEnd); }
+            set
+            {
+                SecondEnd = (int)value.TotalMilliseconds;
+                OnPropertyChanged("SecondEnd");
+            }
+
+        }
+
+
         public int FirstStart { get; set; }
         public int SecondStart { get; set; }
+
+        public int FirstEnd { get; set; }
+
+        public int SecondEnd { get; set; }
+
         private bool isSelected;
         public bool IsSelected {
             get { return isSelected; }
@@ -129,6 +165,9 @@ namespace WpfApp1.SubtitlePair
             FirstStart = pair.First.StartTime;
             SecondStart = pair.Second.StartTime;
 
+            FirstEnd = pair.First.EndTime;
+            SecondEnd = pair.Second.EndTime;
+
             foreach (var s in pair.First.Lines)
             {
                 FirstContent += s + ' ' ;
@@ -138,7 +177,32 @@ namespace WpfApp1.SubtitlePair
             {
                 SecondContent += s + ' ';
             }
-            Diff = FirstContent + '\n' + SecondContent;
+        }
+
+        public string FirstSubtitleAsString()
+        {
+            return ConvertSubtitleToString(true);
+        }
+
+        public string SecondSubtitleAsString()
+        {
+            return ConvertSubtitleToString(false);
+        }
+
+        private string ConvertSubtitleToString(bool convertFirst)
+        {
+            if (convertFirst)
+            {
+                return $"{FirstStartTimeSpan.ToString(Settings.TimeSpanStringFormat)} --> {FirstEndTimeSpan.ToString(Settings.TimeSpanStringFormat)}"
+                    + '\n'
+                    + FirstContent;
+            }
+            else
+            {
+                return $"{SecondStartTimeSpan.ToString(Settings.TimeSpanStringFormat)} --> {SecondEndTimeSpan.ToString(Settings.TimeSpanStringFormat)}"
+                    + '\n'
+                    + SecondContent;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -146,6 +210,28 @@ namespace WpfApp1.SubtitlePair
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+    }
+
+    public class SubtitleViewModelSorter : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            SubtitlePairViewModel first = x as SubtitlePairViewModel;
+            SubtitlePairViewModel second = y as SubtitlePairViewModel;
+
+            int thisStartTime = Math.Max(first.FirstStart, first.SecondStart);
+            int otherStartTime = Math.Max(second.FirstStart, second.SecondStart);
+
+            if (thisStartTime > otherStartTime)
+            {
+                return 1;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
     }

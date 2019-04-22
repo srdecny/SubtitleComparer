@@ -1,27 +1,21 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.ComponentModel;
+using System.Windows.Threading;
+using WpfApp1.Extensions;
 using WpfApp1.SubtitlePair;
 using System.Collections.ObjectModel;
-using SubtitlesParser;
-using System.ComponentModel;
-using System.IO;
-using System.Diagnostics;
-using Microsoft.Win32;
-using WpfApp1.Extensions;
-using System.Windows.Threading;
-using Unosquare.FFME.Shared;
+using System.Text;
 
 namespace WpfApp1
 {
@@ -36,8 +30,7 @@ namespace WpfApp1
 
         public MainWindow()
         {
-            Unosquare.FFME.MediaElement.FFmpegDirectory = @"C:\Users\srdecny\Documents\ffmpeg";
-            AppSettings.FirstSubtitlePath = @"C:\Users\srdecny\Documents\subtitles.srt";
+            Unosquare.FFME.MediaElement.FFmpegDirectory = Settings.GetFfmpegDirectoryFromConfig();
 
             InitializeComponent();
             VideoElement.LoadedBehavior = MediaState.Manual;
@@ -68,9 +61,10 @@ namespace WpfApp1
             }
                 
             SubtitlePairBox.ItemsSource = foo;
-            var view = CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource);
+            ListCollectionView view = (ListCollectionView)CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource);
             view.Filter = ToggleDiffFilter;
-            AnalyzeSubtitles();
+            view.CustomSort = new SubtitleViewModelSorter();
+            //AnalyzeSubtitles();
         }
 
         private bool ToggleDiffFilter(object item)
@@ -98,6 +92,7 @@ namespace WpfApp1
 
         private async void SubtitlePairBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            return;
             if (((FrameworkElement)e.OriginalSource).DataContext is SubtitlePairViewModel item)
             {
                 await VideoElement.Pause();
@@ -110,7 +105,7 @@ namespace WpfApp1
 
         private void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            Console.WriteLine("...");
+            
         }
 
         // Update the selected items and center the screen.
@@ -121,11 +116,18 @@ namespace WpfApp1
 
             // Microbenchmarked a manual for loop, but there's no performance difference.
             
-            var firstItem = items.Where(x => new TimeSpan((long)x.FirstStart * 10000) > VideoElement.Position).First();
-            var secondItem = items.Where(x => new TimeSpan((long)x.SecondStart * 10000) > VideoElement.Position).First();
+            var firstItem = items.Where(x => x.FirstStartTimeSpan > VideoElement.Position).OrderBy(x => x.FirstStartTimeSpan).First();
+            var secondItem = items.Where(x => x.SecondStartTimeSpan > VideoElement.Position).OrderBy(x => x.SecondStartTimeSpan).First();
 
-            firstItem.IsSelected = true;
-            secondItem.IsSelected = true;   
+            if (firstItem.FirstStart < secondItem.SecondStart)
+            {
+                firstItem.IsSelected = true;
+            }
+            else
+            {
+                secondItem.IsSelected = true;
+            }
+
             SubtitlePairBox.UpdateLayout();
 
             // TODO: Handle a case where the items too much out of sync.
@@ -180,94 +182,83 @@ namespace WpfApp1
             }
         }
 
-        private void Diff_TargetUpdated(object sender, DataTransferEventArgs e)
+        private void FirstSubtitleExportButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBlock block)
+            SaveFileDialog dialog = new SaveFileDialog();
+
+            if (dialog.ShowDialog() == true)
             {
 
-                var delimiters = ",. ".ToCharArray();
+                StringBuilder sb = new StringBuilder();
+                var items = SubtitlePairBox.ItemsSource as List<SubtitlePairViewModel>;
+                int count = 1;
 
-                if (block.Text.Split('\n')[0] == block.Text.Split('\n')[1])
+                foreach (var subtitle in items.Where(x => x.FirstContent != "").OrderBy(x => x.FirstStartTimeSpan))
                 {
-                    block.Text = "SAME";
-                    return;
-                }
-                else
-                {
-                    var firstWords = block.Text.Split('\n')[0].Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-                    var secondWords = block.Text.Split('\n')[1].Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-
-                    List<(string, bool)> formattedWordsFirst = new List<(string, bool)>();
-                    List<(string, bool)> formattedWordsSecond = new List<(string, bool)>();
-
-                    int smallerSize = Math.Min(firstWords.Count(), secondWords.Count());
-
-
-                    block.Text = "";
-
-                    for (int i = 0; i < smallerSize; i++)
-                    {
-                        if (firstWords[i] != secondWords[i])
-                        {
-                            formattedWordsFirst.Add(ValueTuple.Create(firstWords[i], true));
-                            formattedWordsSecond.Add(ValueTuple.Create(secondWords[i], true));
-                        }
-                        else
-                        {
-                            formattedWordsFirst.Add(ValueTuple.Create(firstWords[i], false));
-                            formattedWordsSecond.Add(ValueTuple.Create(secondWords[i], false));
-                        }
-                    }
-
-                    if (firstWords.Count() > smallerSize)
-                    {
-                        for (int i = smallerSize; i < firstWords.Count(); i++)
-                        {
-                            formattedWordsFirst.Add(ValueTuple.Create(firstWords[i], true));
-                        }
-                    }
-                    else
-                    {
-                        for (int i = smallerSize; i < secondWords.Count(); i++)
-                        {
-                            formattedWordsSecond.Add(ValueTuple.Create(secondWords[i], true));
-                        }
-                    }
-
-                    foreach (var formattedWord in formattedWordsFirst)
-                    {
-                        if (formattedWord.Item2 == true)
-                        {
-                            block.Inlines.Add(new Run(formattedWord.Item1 + " ") { Foreground = Brushes.Red });
-                        }
-                        else
-                        {
-                            block.Inlines.Add(new Run(formattedWord.Item1 + " "));
-
-                        }
-                    }
-                    block.Inlines.Add(new Run("\n"));
-                    foreach (var formattedWord in formattedWordsSecond)
-                    {
-                        if (formattedWord.Item2 == true)
-                        {
-                            block.Inlines.Add(new Run(formattedWord.Item1 + " ") { Foreground = Brushes.Green });
-                        }
-                        else
-                        {
-                            block.Inlines.Add(new Run(formattedWord.Item1 + " "));
-                        }
-                    }
-
+                    sb.Append(count);
+                    sb.AppendLine();
+                    sb.Append(subtitle.FirstSubtitleAsString());
+                    sb.AppendLine();
+                    sb.AppendLine();
+                    count++;
                 }
 
+                File.WriteAllText(dialog.FileName, sb.ToString());
+            }
 
+        }
+
+        private void SecondSubtitleExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+
+            if (dialog.ShowDialog() == true)
+            {
+
+                StringBuilder sb = new StringBuilder();
+                var items = SubtitlePairBox.ItemsSource as List<SubtitlePairViewModel>;
+                int count = 1;
+
+                foreach (var subtitle in items.Where(x => x.SecondContent != "").OrderBy(x => x.SecondStartTimeSpan))
+                {
+                    sb.Append(count);
+                    sb.AppendLine();
+                    sb.Append(subtitle.SecondSubtitleAsString());
+                    sb.AppendLine();
+                    sb.AppendLine();
+                    count++;
+                }
+
+                File.WriteAllText(dialog.FileName, sb.ToString());
             }
         }
 
-        private void TextBlock_Loaded(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Diff_TargetUpdated(sender, null);
+            CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource).Refresh();
+        }
+    }
+
+    public class StringToTimespanConverter : IValueConverter
+    {
+        // TimeSpan -> String
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((TimeSpan)value).ToString(Settings.TimeSpanStringFormat);
+        }
+
+        // String -> TimeSpan
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            TimeSpan timespan;
+            if (TimeSpan.TryParseExact(value.ToString(), Settings.TimeSpanStringFormat, CultureInfo.InvariantCulture, out timespan))
+            {
+                return timespan;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

@@ -6,9 +6,10 @@
     xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
     xmlns:local="clr-namespace:WpfApp1"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Title="MainWindow"
-    Width="917.333" 
-    Height="450"
+    Width="1155.666" 
+    Height="579.166"
     mc:Ignorable="d">
     <Window.InputBindings>
         <KeyBinding Key="Space" Command="MediaCommands.Pause"></KeyBinding>
@@ -29,6 +30,9 @@
                         CanExecute="CanExecute_Backward">
         </CommandBinding>
     </Window.CommandBindings>
+    <Window.Resources>
+        <local:StringToTimespanConverter x:Key="StringToTimespanConverter"/>
+    </Window.Resources>
     <Grid RenderTransformOrigin="0.529,0.489">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
@@ -51,21 +55,34 @@
                         <GridViewColumn Width="Auto" Header="First">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding FirstContent}" TextWrapping="Wrap" />
+                                    <TextBox Text="{Binding FirstContent, Mode=TwoWay}" TextWrapping="Wrap" BorderThickness="0" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                         <GridViewColumn Width="Auto" Header="First">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Diff, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" TargetUpdated="Diff_TargetUpdated" TextWrapping="Wrap" Loaded="TextBlock_Loaded" />
+                                    <StackPanel>
+                                        <TextBox Text="{Binding FirstStartTimeSpan, Mode=TwoWay,Converter={StaticResource StringToTimespanConverter}}" BorderThickness="0"/>
+                                        <TextBox Text="{Binding FirstEndTimeSpan, Mode=TwoWay,Converter={StaticResource StringToTimespanConverter}}" BorderThickness="0"/>
+                                    </StackPanel>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                         <GridViewColumn Width="Auto" Header="First">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding SecondContent}" TextWrapping="Wrap" />
+                                    <StackPanel>
+                                        <TextBox Text="{Binding SecondStartTimeSpan, Mode=TwoWay,Converter={StaticResource StringToTimespanConverter}}" BorderThickness="0"/>
+                                        <TextBox Text="{Binding SecondEndTimeSpan, Mode=TwoWay,Converter={StaticResource StringToTimespanConverter}}" BorderThickness="0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="Auto" Header="First">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding SecondContent, Mode=TwoWay}" TextWrapping="Wrap" BorderThickness="0"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -82,9 +99,9 @@
             <CheckBox
                 x:Name="ToggleDiffCheckBox"
                 Grid.Row="0"
-                Margin="0,261,222.999,0"
+                Margin="0,0,294.666,32"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Top"
+                VerticalAlignment="Bottom"
                 Checked="ToggleDiffCheckBox_Checked"
                 Content="Filter Diff"
                 Unchecked="ToggleDiffCheckBox_Unchecked" />
@@ -109,13 +126,27 @@
                 UnloadedBehavior="Manual"
                 />
             <Button Content="Play/Pause" Margin="0,0,9.999,31.667" Click="Button_Click_1" HorizontalAlignment="Right" Width="120" Height="49" VerticalAlignment="Bottom"/>
-            <Grid Grid.Row="2">
-                <Button x:Name="FirstSubtitleFileButton" Content="First subtitle" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="90" Click="FirstSubtitleFileButton_Click"/>
-                <TextBlock HorizontalAlignment="Left" Margin="115,10,0,0" TextWrapping="Wrap" Text="{Binding FirstSubtitlePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173"/>
-                <Button x:Name="SecondSubtitleFileButton" Content="Second subtitle" HorizontalAlignment="Left" Margin="10,51,0,0" VerticalAlignment="Top" Width="90" Click="SecondSubtitleButton_Click" />
-                <TextBlock HorizontalAlignment="Left" Margin="115,51,0,0" TextWrapping="Wrap" Text="{Binding SecondSubtitlePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173"/>
-                <Button x:Name="AudioFileButton" Content="Audio file" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Width="90" Click="AudioFileButton_Click" />
-                <TextBlock HorizontalAlignment="Left" Margin="115,91,0,0" TextWrapping="Wrap" Text="{Binding AudioFilePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173"/>
+            <Grid Margin="0,358,19.666,17" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="163*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="108*"/>
+                    <ColumnDefinition Width="14*"/>
+                    <ColumnDefinition Width="146*"/>
+                    <ColumnDefinition Width="15*"/>
+                    <ColumnDefinition Width="75*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="FirstSubtitleFileButton" Content="First subtitle" HorizontalAlignment="Left" Margin="10,0.333,0,0" VerticalAlignment="Top" Width="90" Click="FirstSubtitleFileButton_Click" Grid.Row="1"/>
+                <TextBlock HorizontalAlignment="Left" Margin="7,0.333,0,0" TextWrapping="Wrap" Text="{Binding FirstSubtitlePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173" Grid.ColumnSpan="4" Grid.Column="1" Grid.Row="1"/>
+                <Button x:Name="SecondSubtitleFileButton" Content="Second subtitle" HorizontalAlignment="Left" Margin="10,41.333,0,0" VerticalAlignment="Top" Width="90" Click="SecondSubtitleButton_Click" Grid.Row="1" />
+                <TextBlock HorizontalAlignment="Left" Margin="7,41.333,0,0" TextWrapping="Wrap" Text="{Binding SecondSubtitlePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173" Grid.ColumnSpan="4" Grid.Column="1" Grid.Row="1"/>
+                <Button x:Name="AudioFileButton" Content="Audio file" HorizontalAlignment="Left" Margin="10,77.333,0,0" VerticalAlignment="Top" Width="90" Click="AudioFileButton_Click" Grid.Row="1" />
+                <TextBlock HorizontalAlignment="Left" Margin="7,81.333,0,0" TextWrapping="Wrap" Text="{Binding AudioFilePath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="173" Grid.ColumnSpan="4" Grid.Column="1" Grid.Row="1"/>
+                <Button Content="Export second subtitles" HorizontalAlignment="Right" Margin="0,0,142,0" VerticalAlignment="Bottom" Width="126" Click="SecondSubtitleExportButton_Click" Grid.ColumnSpan="3" Grid.Row="1"/>
+                <Button Content="Export first subtitles" HorizontalAlignment="Right" Margin="0,0,142,25" VerticalAlignment="Bottom" Width="126" Click="FirstSubtitleExportButton_Click" Grid.ColumnSpan="3" Grid.Row="1"/>
+                <Button Content="Update" HorizontalAlignment="Right" Margin="0,0,29,0" VerticalAlignment="Bottom" Width="75" Click="Button_Click" Grid.Column="2" Grid.Row="1"/>
 
             </Grid>
         </Grid>

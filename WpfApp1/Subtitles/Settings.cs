@@ -42,9 +42,9 @@ namespace WpfApp1
 
         public Settings()
         {
-            _FirstSubtitlePath = @"C:\Users\srdecny\Documents\subtitles.srt";
-            _SecondSubtitlePath = @"C:\Users\srdecny\Documents\subtitles.srt";
-            _AudioFilePath = @"C:\Users\srdecny\Documents\videoplayback.mp4";
+            _FirstSubtitlePath = @"C:\Users\Vojta\Documents\rocnikac\subtitles.srt";
+            _SecondSubtitlePath = @"C:\Users\Vojta\Documents\rocnikac\subtitles3.srt";
+            _AudioFilePath = @"C:\Users\Vojta\Documents\rocnikac\7_1.mp4";
         }
 
         protected void OnPropertyChanged(string name)
@@ -58,7 +58,7 @@ namespace WpfApp1
         // Treshold ercentage of subtitle pairs, where they are considered different.
         public static double SimilarnessPercentageTreshold = 0.5;
 
-
+        public static string TimeSpanStringFormat = "h\\:mm\\:ss\\,fff";
     }
 
 
