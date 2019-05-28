@@ -74,10 +74,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Analyzers\Class1.cs" />
+    <Compile Include="Dialogues\UrlDialogue.xaml.cs">
+      <DependentUpon>UrlDialogue.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\ScrollExtension.cs" />
     <Compile Include="Shortcuts\Shortcuts.cs" />
     <Compile Include="Subtitles\Subtitles.cs" />
     <Compile Include="Subtitles\Settings.cs" />
+    <Page Include="Dialogues\UrlDialogue.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -118,5 +125,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

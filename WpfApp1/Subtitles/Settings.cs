@@ -4,11 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace WpfApp1
 {
     public class Settings : INotifyPropertyChanged
     {
+        public static string GetFfmpegDirectoryFromConfig()
+        {
+            return ConfigurationSettings.AppSettings["FFMPegBinaries"].ToString();
+        }
+
         private string _FirstSubtitlePath;
         public string FirstSubtitlePath {
             get { return _FirstSubtitlePath; }

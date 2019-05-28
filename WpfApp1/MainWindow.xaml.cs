@@ -14,8 +14,10 @@ using System.ComponentModel;
 using System.Windows.Threading;
 using WpfApp1.Extensions;
 using WpfApp1.SubtitlePair;
+using WpfApp1.Dialogues;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Net;
 
 namespace WpfApp1
 {
@@ -24,7 +26,7 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        Settings AppSettings { get; set; } = new Settings();
+        Settings AppSettings { get; set; } = new Settings(); 
         Subtitles FirstSub;
         Subtitles SecondSub;
 
@@ -92,7 +94,6 @@ namespace WpfApp1
 
         private async void SubtitlePairBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            return;
             if (((FrameworkElement)e.OriginalSource).DataContext is SubtitlePairViewModel item)
             {
                 await VideoElement.Pause();
@@ -105,7 +106,7 @@ namespace WpfApp1
 
         private void VideoElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            
+            MessageBox.Show("Error during video playback. Check the FFMPeg binaries folder.");
         }
 
         // Update the selected items and center the screen.
@@ -236,6 +237,29 @@ namespace WpfApp1
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             CollectionViewSource.GetDefaultView(SubtitlePairBox.ItemsSource).Refresh();
+        }
+
+        private string getSubtitleUrl()
+        {
+            UrlDialogue d = new UrlDialogue();
+            if(d.ShowDialog() == true)
+            {
+                return d.Answer;
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            getSubtitleUrl();
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            getSubtitleUrl();
         }
     }
 
